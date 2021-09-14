@@ -47,16 +47,28 @@ public class VisualizeSimulation extends JFrame {
 	    } catch (Exception exception) {
 	    	System.out.println(exception);
 	    }	
-		
+		int ms = filename.split("M", -1).length-1;
 	    Position robotPos = new Position(0,0); // Modify for multiple robots MIW
 		Environment env = new Environment(map, robotPos); // Modify for multiple robots MIW
+		Environment env2 = new Environment(map, robotPos);
+		Environment envControl = new Environment(map, robotPos);
 		Robot robot = new Robot(env, robotPos.getRow(), robotPos.getCol());
+		Robot robot2 = new Robot(env2, robotPos.getRow(), robotPos.getCol());
 		// TODO: Change the following to the search algorithm you are testing.
-		robot.bfs();
+		if(ms == 1) {
+			System.out.println("Running in single target mode.");
+			robot.bfs();
+			robot2.astar();
+		}else{
+			System.out.println("Running in multi target mode.");
+			robot.bfsM();
+			robot.astarM();
+		}
 	
 		ArrayList<Robot> robots = new ArrayList<Robot>();
 		robots.add(robot);
-    	envPanel = new EnvironmentPanel(env, robots);
+		robots.add(robot2);
+    	envPanel = new EnvironmentPanel(envControl, robots);
     	add(envPanel);
 	}
 	
@@ -81,7 +93,7 @@ class EnvironmentPanel extends JPanel{
 	public static final int TILESIZE = 15;
 	//TODO: Change the timeStepSpeed to speed-up or slow down the animation.
 	// 500 millisecond time steps
-	private int timeStepSpeed = 200;
+	private int timeStepSpeed = 50;
 	
 	public EnvironmentPanel(Environment env, ArrayList<Robot> robots) {
 	    setPreferredSize(new Dimension(env.getCols()*TILESIZE, env.getRows()*TILESIZE));
