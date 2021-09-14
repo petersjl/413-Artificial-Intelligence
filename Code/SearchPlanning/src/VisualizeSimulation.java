@@ -63,7 +63,7 @@ public class VisualizeSimulation extends JFrame {
 	public static void main(String[] args) {
 		filename = args[0];
 	    JFrame frame = new VisualizeSimulation();
-	    frame.setTitle("CSSE 413: Search Assignment");
+	    frame.setTitle("CSSE 413: Search Assignment: " + filename);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.pack();
 	    frame.setVisible(true);
