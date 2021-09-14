@@ -1,6 +1,6 @@
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
+import java.util.function.Function;
 
 /**
 	Represents an intelligent agent moving through a particular room.	
@@ -13,10 +13,11 @@ public class Robot {
 	private Environment env;
 	private int posRow;
 	private int posCol;
-	private LinkedList<Action> path;
+	private LinkedList<Position> path;
 	private boolean pathFound;
 	private long openCount;
 	private int pathLength;
+	private Iterator<Position> pathWalk;
 	
 	/**
 	    Initializes a Robot on a specific tile in the environment. 
@@ -61,8 +62,19 @@ public class Robot {
 	   search functions.
 	*/
 	public Action getAction () {
-		//TODO: Implement this method
-	    return Action.DO_NOTHING;
+		if(!pathFound) return Action.DO_NOTHING;
+		if(pathWalk == null) {
+			pathWalk = path.iterator();
+			//remove the start point
+			pathWalk.next();
+		}
+		if(!pathWalk.hasNext()) return Action.DO_NOTHING;
+		Position pos = pathWalk.next();
+		if(pos.getRow() < this.posRow) return Action.MOVE_UP;
+		if(pos.getRow() > this.posRow) return Action.MOVE_DOWN;
+		if(pos.getCol() < this.posCol) return Action.MOVE_LEFT;
+		if(pos.getCol() > this.posCol) return Action.MOVE_RIGHT;
+		return Action.DO_NOTHING;
 	}
 	
 	/** 
@@ -70,10 +82,103 @@ public class Robot {
 	 * and sets pathFound to true, if a path has been found. IMPORTANT: This method 
 	 * increases the openCount field every time your code adds a node to the open
 	 * data structure, i.e. the queue or priorityQueue
-	 * 
+	 *
+	 * @return
 	 */
-	public void bfs() {
-		//TODO: Implement this method
+	public LinkedList<Position> bfs() {
+		//create the queue of paths
+		LinkedList<LinkedList<Position>> queue = new LinkedList<>();
+		//and add the first path which is the start state of the robot
+		LinkedList<Position> first = new LinkedList<>();
+		first.push(new Position(posRow,posCol));
+		queue.push(first);
+		env.setTileStatus(new Position(posRow,posCol), TileStatus.DIRTY);
+		openCount++;
+		while(!queue.isEmpty()){
+			//get the next path so far
+			LinkedList<Position> current = queue.poll();
+			//get the current position of that path
+			Position spot = current.getLast();
+			//System.out.println("Checking position: " + spot.getRow() + ", " + spot.getCol());
+			//check the status of all surrounding positions
+			TileStatus up = env.getTileStatus(spot.getRow() - 1, spot.getCol());
+			TileStatus down = env.getTileStatus(spot.getRow() + 1, spot.getCol());
+			TileStatus left = env.getTileStatus(spot.getRow(), spot.getCol() - 1);
+			TileStatus right = env.getTileStatus(spot.getRow(), spot.getCol() + 1);
+			//check for target hits
+			if(up == TileStatus.TARGET){
+				//System.out.println("Up target");
+				current.add(new Position(spot.getRow() - 1, spot.getCol()));
+				path = current;
+				pathFound = true;
+				pathLength = current.size() - 1;
+				return current;
+			}
+			if(down == TileStatus.TARGET){
+				//System.out.println("Down target");
+				current.add(new Position(spot.getRow() + 1, spot.getCol()));
+				path = current;
+				pathFound = true;
+				pathLength = current.size() - 1;
+				return current;
+			}
+			if(left == TileStatus.TARGET){
+				//System.out.println("Left target");
+				current.add(new Position(spot.getRow(), spot.getCol() - 1));
+				path = current;
+				pathFound = true;
+				pathLength = current.size() - 1;
+				return current;
+			}
+			if(right == TileStatus.TARGET){
+				//System.out.println("Right target");
+				current.add(new Position(spot.getRow(), spot.getCol() + 1));
+				path = current;
+				pathFound = true;
+				pathLength = current.size() - 1;
+				return current;
+			}
+			//check for passable adjacent spots
+			Position newPos;
+			if(up == TileStatus.CLEAN){
+//				System.out.println("Up clean");
+				LinkedList<Position> newPath = (LinkedList<Position>) current.clone();
+				newPos = new Position(spot.getRow() - 1, spot.getCol());
+				newPath.add(newPos);
+				openCount++;
+				queue.add(newPath);
+				env.setTileStatus(newPos, TileStatus.DIRTY);
+			}
+			if(down == TileStatus.CLEAN){
+//				System.out.println("Down clean");
+				LinkedList<Position> newPath = (LinkedList<Position>) current.clone();
+				newPos = new Position(spot.getRow() + 1, spot.getCol());
+				newPath.add(newPos);
+				openCount++;
+				queue.add(newPath);
+				env.setTileStatus(newPos, TileStatus.DIRTY);
+			}
+			if(left == TileStatus.CLEAN){
+//				System.out.println("Left clean");
+				LinkedList<Position> newPath = (LinkedList<Position>) current.clone();
+				newPos = new Position(spot.getRow(), spot.getCol() - 1);
+				newPath.add(newPos);
+				openCount++;
+				queue.add(newPath);
+				env.setTileStatus(newPos, TileStatus.DIRTY);
+			}
+			if(right == TileStatus.CLEAN){
+//				System.out.println("Right clean");
+				LinkedList<Position> newPath = (LinkedList<Position>) current.clone();
+				newPos = new Position(spot.getRow(), spot.getCol() + 1);
+				newPath.add(newPos);
+				openCount++;
+				queue.add(newPath);
+				this.env.setTileStatus(newPos, TileStatus.DIRTY);
+			}
+		}
+		pathFound = false;
+		return null;
 	}
 	
 	/** 

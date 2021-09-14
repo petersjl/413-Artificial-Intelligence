@@ -81,7 +81,7 @@ class EnvironmentPanel extends JPanel{
 	public static final int TILESIZE = 15;
 	//TODO: Change the timeStepSpeed to speed-up or slow down the animation.
 	// 500 millisecond time steps
-	private int timeStepSpeed = 500;
+	private int timeStepSpeed = 200;
 	
 	public EnvironmentPanel(Environment env, ArrayList<Robot> robots) {
 	    setPreferredSize(new Dimension(env.getCols()*TILESIZE, env.getRows()*TILESIZE));
@@ -185,7 +185,7 @@ class EnvironmentPanel extends JPanel{
 		Tile[][] tiles = env.getTiles();
 		for(int row = 0; row < env.getRows(); row++)
 		    for(int col = 0; col < env.getCols(); col++) {
-		        if(tiles[row][col].getStatus() == TileStatus.CLEAN) {
+		        if(tiles[row][col].getStatus() == TileStatus.CLEAN || tiles[row][col].getStatus() == TileStatus.DIRTY) {
                     g.setColor(Properties.SILVER);
                 } else if(tiles[row][col].getStatus() == TileStatus.IMPASSABLE) {
                     g.setColor(Properties.BLACK);

@@ -63,6 +63,8 @@ public class Environment {
 		else return tiles[row][col].getStatus();
 	}
 
+	public void setTileStatus(Position pos, TileStatus status){ tiles[pos.getRow()][pos.getCol()].setStatus(status); }
+
 	/* Counts number of tiles that are not walls */
 	public int getNumTiles() {
 		int count = 0;

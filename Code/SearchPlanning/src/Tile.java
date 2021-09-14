@@ -12,6 +12,8 @@ public class Tile {
 	}
 	
 	public TileStatus getStatus() { return status; }
+
+	public void setStatus(TileStatus status) { this.status = status; }
 	
 	public String toString() { return ""+status.toString().charAt(0); }
 }
