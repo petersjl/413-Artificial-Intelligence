@@ -1,0 +1,28 @@
+Joseph Peters
+Constraint Satisfaction Essay
+
+“In what sense is your software intelligent?” I think this is a fantastic question as it implies there are various types of intelligence 
+which a program could take on. A calculator could be considered intelligent but not really in the same way one would consider an AI 
+intelligent. Calculators can do much more complex mathematical computations than any human could hope to do in much less time, but 
+it cannot replicate speech like chatbot AIs have been trained to do. With this in mind, I believe my program has plenty of ways in 
+which it is “intelligent” and plenty of ways in which it is not.
+
+The primary way in which I would call my program intelligent is that it can solve sudoku puzzles in less than a minute, a feat which 
+would take me minutes to hours to complete. It can solve any solvable 9x9 puzzle, even ones that I may not be able to figure out. It 
+does this through a mostly brute force method. It finds the first blank space and tries a valid character. This is another spot of 
+intelligence as it looks in that spot’s row, column, and partition to find only the valid characters to try. This means it never tries 
+a 9 when it is a restricted character from something already present. It will then find the next blank space and try to add a valid 
+character to it as well. If any space has no valid characters, it will go back and try another valid character for the previous space 
+and then try to go forward again. If it fails enough such that there are no valid characters left for a spot, it will do the same 
+process one more space back. If it backtracks such that the first blank space has no valid characters left to try, then it will return 
+a failing result stating that there is no valid solution. If it fills in all of the boxes then it terminates and returns the completed 
+puzzle. This method is intelligent in that, given enough time and resources, it can solve any sudoku puzzle no matter size or complexity.
+
+Now to how it is not intelligent. This is a brute force approach. The system does no more “thought” than which characters are valid and 
+trying all valid characters until some combination works. This is very inefficient as there are a massive number of possible states for 
+a sudoku board. The human approach is to fill in the most restricted boxes first and then move on to harder boxes when necessarily. For 
+example, if a box is restricted from the start to only allow one number, this should be filled in first so it can’t cause problems later, 
+but this same convenience can cause a brute force program to backtrack all the way to the first blank.
+
+In short, this program is better than me at solving small sudoku puzzles but uses much worse methods than I could do on my own, making 
+it hard for it to solve large puzzles.
