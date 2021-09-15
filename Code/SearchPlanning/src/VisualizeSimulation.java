@@ -62,7 +62,7 @@ public class VisualizeSimulation extends JFrame {
 		}else{
 			System.out.println("Running in multi target mode.");
 			robot.bfsM();
-			robot.astarM();
+			robot2.astarM();
 		}
 	
 		ArrayList<Robot> robots = new ArrayList<Robot>();
@@ -90,7 +90,7 @@ class EnvironmentPanel extends JPanel{
 	private LinkedList<Position> targets;
 	private int timesteps, timestepsStop;
 	//TODO: Change TILESIZE if you want to enlarge the visualization.
-	public static final int TILESIZE = 15;
+	public static final int TILESIZE = 30;
 	//TODO: Change the timeStepSpeed to speed-up or slow down the animation.
 	// 500 millisecond time steps
 	private int timeStepSpeed = 50;

@@ -87,4 +87,13 @@ public class Environment {
 	    		tiles[row][col].getStatus() != TileStatus.IMPASSABLE;
 	}
 
+	public void cleanEnvironment(){
+		for (int i = 0; i < this.getRows(); i++){
+			for (int j = 0; j < this.getCols(); j++){
+				if (this.getTileStatus(i,j) == TileStatus.DIRTY) this.setTileStatus(new Position(i,j), TileStatus.CLEAN);
+			}
+		}
+		return;
+	}
+
 }
