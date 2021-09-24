@@ -73,30 +73,71 @@ public class Robot {
 	      SemanticGraph graph = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
 	      graph.prettyPrint();
 	      
-	      List<IndexedWord> li = graph.getAllNodesByPartOfSpeechPattern("RB|UH");
+	      List<IndexedWord> li = graph.getAllNodesByPartOfSpeechPattern("RB|VB|RP|NN|UH|JJ");
+		  Direction direction = null;
+		  DirectAction action = null;
 	      for (IndexedWord w : li) {
-	    	  if (w.tag().equals("RB")) {
-	    		  return processRB(w.word());
+	    	  if (w.tag().equals("RB") || w.tag().equals("RP") || w.tag().equals("UH") || w.tag().equals("NN")) {
+	    		  if(direction == null) direction = processRB(w.word());
 	    	  }
-	    	  if (w.tag().equals("UH")) {
-	    		  return processUH(w.word());
-	    	  }
+			  if (w.tag().equals("VB") || w.tag().equals("NN") || w.tag().equals("JJ")) {
+				  if(action == null) action = processVB(w.word());
+			  }
 	      }
-    	  System.out.println("Cannot identify sentence structure.");
-    	  return Action.DO_NOTHING;
+		  if(action == DirectAction.CLEAN) return Action.CLEAN;
+		  if(action == DirectAction.STAY) return Action.DO_NOTHING;
+		  if(action == DirectAction.MOVE || action == null){
+			  if(direction == null){
+				  System.out.println("Cannot identify sentence structure.");
+				  return Action.DO_NOTHING;
+			  }
+			  switch (direction){
+				  case UP: return Action.MOVE_UP;
+				  case DOWN: return Action.MOVE_DOWN;
+				  case LEFT: return Action.MOVE_LEFT;
+				  case RIGHT: return Action.MOVE_RIGHT;
+			  }
+		  }
 	    }
   	  System.out.println("Empty sentence.");
   	  return Action.DO_NOTHING;
 	}
 
-	static public Action processRB(String word){
-		System.out.println(word);
-	    return Action.DO_NOTHING;
+	static public Direction processRB(String word){
+		switch (word) {
+			case "left": return Direction.LEFT;
+			case "right": return Direction.RIGHT;
+			case "up": return Direction.UP;
+			case "down": return Direction.DOWN;
+			default: return null;
+		}
 	}
 	
 	static public Action processUH(String word){
 		System.out.println(word);
 	    return Action.DO_NOTHING;
+	}
+
+	static public DirectAction processVB(String word){
+		switch (word) {
+			case "clean": case "wash": case "wipe": case "scrub": case "cleanse": case "mop": return DirectAction.CLEAN;
+			case "move": case "proceed": case "advance": case "step": case "jump": case "walk": case "go": return DirectAction.MOVE;
+			case "stay": case "sit": case "wait": case "hold": return DirectAction.STAY;
+			default: return null;
+		}
+	}
+
+	private enum DirectAction{
+		CLEAN,
+		MOVE,
+		STAY
+	}
+
+	private enum Direction{
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT
 	}
 
 
