@@ -24,6 +24,7 @@ import javax.swing.Timer;
 public class VisualizeSimulation extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private EnvironmentPanel envPanel;
+	private static String filename = "";
 	
 	/* Builds the environment; while not necessary for this problem set,
 	 * this could be modified to allow for different types of environments,
@@ -32,7 +33,6 @@ public class VisualizeSimulation extends JFrame {
 	 */
 	public VisualizeSimulation() {
 		// TODO: change the following to run the simulation on different maps.
-		String filename = "Map100.txt";
 		LinkedList<String> map = new LinkedList<> ();
 	    try {
 			File inputFile = new File(filename);
@@ -57,8 +57,8 @@ public class VisualizeSimulation extends JFrame {
 	}
 	
 	public static void main(String[] args) {
+		filename = args[0];
 	    JFrame frame = new VisualizeSimulation();
-
 	    frame.setTitle("CSSE 413: HRC Project");
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.pack();
