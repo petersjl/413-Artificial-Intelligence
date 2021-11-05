@@ -1,0 +1,3 @@
+RCCC
+CCCC
+RCCD
