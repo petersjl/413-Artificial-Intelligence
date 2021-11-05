@@ -8,6 +8,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.semgraph.SemanticGraph;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations;
 import edu.stanford.nlp.semgraph.SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation;
+import edu.stanford.nlp.sentiment.SentimentCoreAnnotations;
 import edu.stanford.nlp.trees.GrammaticalRelation;
 import edu.stanford.nlp.util.CoreMap;
 import edu.stanford.nlp.util.Pair;
@@ -92,6 +93,18 @@ public class Robot {
 			"Finally some praise for all this",
 			"Someone who actually understands my skill"
 	);
+
+	private static List<String> positivePhrases = Arrays.asList(
+			"I appreciate your enthusiasm",
+			"Your energy is infectious",
+			"Thanks for the easy tone"
+	);
+
+	private static List<String> negativePhrases = Arrays.asList(
+			"I'm sorry you seem to be having trouble",
+			"I'll try to make this easier on you in the future",
+			"Maybe we can work on this in the future"
+	);
 	
 	/**
 	    Initializes a Robot on a specific tile in the environment. 
@@ -104,7 +117,7 @@ public class Robot {
 		this.posCol = posCol;
 		
 	    props = new Properties();
-	    props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse");
+	    props.setProperty("annotators", "tokenize, ssplit, pos, lemma, ner, parse, sentiment");
 	    pipeline = new StanfordCoreNLP(props);
 
 		actionList = new ArrayList<>();
@@ -204,6 +217,11 @@ public class Robot {
 			CoreMap sentence = sentences.get(0);
 			SemanticGraph graph = sentence.get(SemanticGraphCoreAnnotations.CollapsedCCProcessedDependenciesAnnotation.class);
 			//graph.prettyPrint();
+
+			switch (sentence.get(SentimentCoreAnnotations.SentimentClass.class) ){
+				case "Positive": System.out.println(positivePhrases.get((int)Math.floor(Math.random() * positivePhrases.size())));break;
+				case "Negative": System.out.println(negativePhrases.get((int)Math.floor(Math.random() * negativePhrases.size())));break;
+			}
 
 			List<IndexedWord> li = graph.getAllNodesByPartOfSpeechPattern("RB|VB|RP|NN|UH|JJ");
 			Direction direction = null;
