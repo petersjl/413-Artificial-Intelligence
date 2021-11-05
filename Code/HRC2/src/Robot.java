@@ -36,25 +36,8 @@ public class Robot {
 	   search functions.
 	*/
 	public Action getAction () {
-		if (toCleanOrNotToClean) {
-			toCleanOrNotToClean = false;
-			return Action.CLEAN;
-		}
-		toCleanOrNotToClean = true;
-		int foo = (int)(Math.random()*4);
-		switch(foo) {
-        case 0:
-        	return Action.MOVE_RIGHT;
-        case 1:
-        	return Action.MOVE_LEFT;
-        case 2:
-        	return Action.MOVE_UP;
-        case 3:
-        	return Action.MOVE_DOWN;
-        default:
-        	return Action.CLEAN;
-		}
+		if (env.getTileStatus(this.posRow, this.posCol) == TileStatus.DIRTY) return Action.CLEAN;
+		return env.getPolicyAtPosition(posRow, posCol);
 	}
-
 
 }

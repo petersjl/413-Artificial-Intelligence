@@ -1,6 +1,8 @@
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.Collections;
 
 /**
  * The world in which this simulation exists. As a base
@@ -17,8 +19,12 @@ public class Environment {
 	private int rows, cols;
 	private LinkedList<Position> targets = new LinkedList<>();
 	private ArrayList<Robot> robots;
-	private String[][] policy;
-	
+	private Action[][] policy;
+	private final double discount = 0.95;
+	private final double epsilon = 0.0001;
+	private final double minChangeInMatrixAllowed;
+	private double [][] rewards;
+
 	public Environment(LinkedList<String> map, ArrayList<Robot> robots) { 
 		this.cols = map.get(0).length();
 		this.rows = map.size();
@@ -38,7 +44,10 @@ public class Environment {
 				}
 			}
 		}
+		this.rewards = initializeWithRewardValues();
 		this.robots = robots;
+		this.minChangeInMatrixAllowed = epsilon * (1 - discount) / discount;
+		this.policy = valueToPolicy(getUtilityMatrix());
 	}
 	
 	/* Traditional Getters and Setters */
@@ -56,9 +65,11 @@ public class Environment {
 		return (ArrayList<Robot>) this.robots.clone();
 	}
 	
-	public String[][]getPolicy(){
+	public Action[][]getPolicy(){
 		return policy;
 	}
+
+	public Action getPolicyAtPosition(int row, int col) { return this.policy[row][col]; }
 
 	/*
 	 * Returns a the status of a tile at a given [row][col] coordinate
@@ -118,5 +129,131 @@ public class Environment {
 	    return row >= 0 && row < rows && col >= 0 && col < cols &&
 	    		tiles[row][col].getStatus() != TileStatus.IMPASSABLE;
 	}
+
+	private double [][] getUtilityMatrix(){
+		double [][] utilityMatrix = initializeWithRewardValues();
+		double[][] previousUtilityMatrix = new double [rows][cols];
+
+		while (true){
+			previousUtilityMatrix = Utilities.copyDoubleArray(utilityMatrix);
+			double currentMaxChangeState = Integer.MIN_VALUE;
+
+			for (int i = 0; i < rows; i++){
+				for (int j = 0; j < cols; j++){
+
+					if (getTileStatus(i,j) != TileStatus.DIRTY){
+						ArrayList <Double> qValues = getQValuesForActions(i, j, previousUtilityMatrix);
+						utilityMatrix[i][j] = rewards[i][j] + discount * Collections.max(qValues);
+						double changeInState = Math.abs(utilityMatrix[i][j] - previousUtilityMatrix[i][j]);
+
+						if (changeInState > currentMaxChangeState){
+							currentMaxChangeState = changeInState;
+						}
+					}
+				}
+			}
+			if (currentMaxChangeState < minChangeInMatrixAllowed){
+				break;
+			}
+		}
+		Utilities.printArray(utilityMatrix);
+		return utilityMatrix;
+	}
+
+	private ArrayList<Double> getQValuesForActions(int i, int j, double[][] previousUtilityMatrix) {
+
+		ArrayList<Double> qValuesForActions = new ArrayList<>();
+
+		Position currentPlace = new Position(i,j);
+
+		qValuesForActions.add(calculatePriority(previousUtilityMatrix, currentPlace, Direction.LEFT));
+		qValuesForActions.add(calculatePriority(previousUtilityMatrix, currentPlace, Direction.RIGHT));
+		qValuesForActions.add(calculatePriority(previousUtilityMatrix, currentPlace, Direction.UP));
+		qValuesForActions.add(calculatePriority(previousUtilityMatrix, currentPlace, Direction.DOWN));
+
+		return qValuesForActions;
+	}
+
+	private double [][] initializeWithRewardValues() {
+		double [][] utilityMatrix = new double[rows][cols];
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < cols; j++){
+
+				if (getTileStatus(i,j) == TileStatus.DIRTY){
+					utilityMatrix[i][j] = 1.0;
+				} else if (getTileStatus(i,j) == TileStatus.CLEAN){
+					utilityMatrix[i][j] = -0.04;
+				} else { //Impassable tiles (will avoid, just giving value for sake of consistency
+					utilityMatrix[i][j] = 0.0;
+				}
+			}
+		}
+		return utilityMatrix;
+	}
+
+	/**
+	 Turns a value matrix into a policy
+	 @param values double array of utility values
+	 @return double array of actions for each position
+	  */
+	private Action[][] valueToPolicy(double[][] values){
+		Action[][] actions = new Action[this.rows][this.cols];
+		for(int i = 0; i < this.rows; i ++){
+			for(int j = 0; j < this.cols; j++){
+				if(this.getTileStatus(i,j) == TileStatus.IMPASSABLE) continue;
+				Position current = new Position(i, j);
+				double up = calculatePriority(values, current, Direction.UP);
+				double down = calculatePriority(values, current, Direction.DOWN);
+				double left = calculatePriority(values, current, Direction.LEFT);
+				double right = calculatePriority(values, current, Direction.RIGHT);
+				double max = -10;
+				Direction maxDir = Direction.NONE;
+				if((up > max) && (getTileStatus(i - 1, j) != TileStatus.IMPASSABLE)) {max = up; maxDir = Direction.UP;}
+				if((down > max) && (getTileStatus(i + 1, j) != TileStatus.IMPASSABLE)) {max = down; maxDir = Direction.DOWN;}
+				if((left > max) && (getTileStatus(i, j - 1) != TileStatus.IMPASSABLE)) {max = left; maxDir = Direction.LEFT;}
+				if((right > max) && (getTileStatus(i, j + 1) != TileStatus.IMPASSABLE)) {maxDir = Direction.RIGHT;}
+				switch (maxDir){
+					case UP : actions[i][j] = Action.MOVE_UP; break;
+					case DOWN: actions[i][j] = Action.MOVE_DOWN; break;
+					case LEFT: actions[i][j] = Action.MOVE_LEFT; break;
+					case RIGHT: actions[i][j] = Action.MOVE_RIGHT; break;
+					case NONE: actions[i][j] = Action.DO_NOTHING; break;
+				}
+			}
+		}
+		Utilities.printArray(actions);
+		return actions;
+	}
+
+	/**
+	 Given a values array, current position, and direction, calculates the
+	 priority of going in that direction
+	 @param values double array of utility values
+	 @param current the current position
+	 @param direction the direction in which to check
+	 @return the double priority value of moving in the given direction
+	 */
+	private double calculatePriority(double[][] values, Position current, Direction direction){
+		double up = (getTileStatus(current.row - 1, current.col)!=TileStatus.IMPASSABLE)?values[current.row - 1][current.col] : values[current.row][current.col];
+		double down = (getTileStatus(current.row + 1, current.col)!=TileStatus.IMPASSABLE)?values[current.row + 1][current.col] : values[current.row][current.col];
+		double left = (getTileStatus(current.row, current.col - 1)!=TileStatus.IMPASSABLE)?values[current.row][current.col - 1] : values[current.row][current.col];
+		double right = (getTileStatus(current.row, current.col + 1)!=TileStatus.IMPASSABLE)?values[current.row][current.col + 1] : values[current.row][current.col];
+		switch (direction){
+			case UP : return ((.8 * up) + (.1 * left) + (.1 * right));
+			case DOWN: return ((.8 * down) + (.1 * left) + (.1 * right));
+			case LEFT: return ((.8 * left) + (.1 * up) + (.1 * down));
+			case RIGHT: return ((.8 * right) + (.1 * up) + (.1 * down));
+		}
+		return 0;
+	}
+
+	private enum Direction{
+		UP,
+		DOWN,
+		LEFT,
+		RIGHT,
+		NONE
+	}
+
 
 }
