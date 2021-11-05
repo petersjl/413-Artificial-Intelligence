@@ -11,4 +11,12 @@ public class Position {
 			this.row = row;
 			this.col = col;
 		}
+
+	@Override
+	public boolean equals(Object o){
+		if(o.getClass() != getClass()) return false;
+		Position other = (Position) o;
+		if(this.row != other.row) return false;
+		return this.col == other.col;
 	}
+}
