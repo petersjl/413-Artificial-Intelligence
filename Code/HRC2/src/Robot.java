@@ -72,14 +72,20 @@ public class Robot {
 
 		double randomDouble = rand.nextDouble();
 		Action currentAction = policy[posRow][posCol];
-		if (randomDouble <= 0.8){
-			return currentAction;
-		} else if (randomDouble <= 0.9){
-			return Action.MOVE_LEFT;
-		} else {
-			return Action.MOVE_RIGHT;
+
+		if(randomDouble >= 0.9){
+			currentAction = Action.MOVE_LEFT;
+		} else if (randomDouble >= 0.8){
+			currentAction = Action.MOVE_RIGHT;
 		}
 
+		switch (currentAction){
+			case MOVE_UP : if(env.getTileStatusWithRobots(posRow - 1, posCol) == TileStatus.IMPASSABLE) return Action.DO_NOTHING; else return currentAction;
+			case MOVE_DOWN: if(env.getTileStatusWithRobots(posRow + 1, posCol) == TileStatus.IMPASSABLE) return Action.DO_NOTHING; else return currentAction;
+			case MOVE_LEFT: if(env.getTileStatusWithRobots(posRow, posCol - 1) == TileStatus.IMPASSABLE) return Action.DO_NOTHING; else return currentAction;
+			case MOVE_RIGHT: if(env.getTileStatusWithRobots(posRow, posCol + 1) == TileStatus.IMPASSABLE) return Action.DO_NOTHING; else return currentAction;
+			default: return Action.DO_NOTHING;
+		}
 	}
 
 	private Position findClosestTarget() {

@@ -80,8 +80,16 @@ public class Environment {
 	 * Returns a the status of a tile at a given [row][col] coordinate
 	 */
 	public TileStatus getTileStatus(int row, int col) {
-		if (row < 0 || row >= rows || col < 0 || col >= cols) return TileStatus.IMPASSABLE; 
-		else return tiles[row][col].getStatus();
+		if (row < 0 || row >= rows || col < 0 || col >= cols) return TileStatus.IMPASSABLE;
+		return tiles[row][col].getStatus();
+	}
+
+	public TileStatus getTileStatusWithRobots(int row, int col) {
+		if (row < 0 || row >= rows || col < 0 || col >= cols) return TileStatus.IMPASSABLE;
+		for(Robot r : this.robots){
+			if(r.getPosRow() == row && r.getPosCol() == col) return TileStatus.IMPASSABLE;
+		}
+		return tiles[row][col].getStatus();
 	}
 
 	/* Counts number of tiles that are not walls */
