@@ -1,4 +1,5 @@
 import java.util.LinkedList;
+import java.util.Random;
 
 /**
 	Represents an intelligent agent moving through a particular room.	
@@ -18,7 +19,8 @@ public class Robot {
 	private static LinkedList<Position> currentTargets = null;
 	public static void setCurrentTargets(LinkedList<Position> targets){currentTargets = targets;}
 	private Position myTarget;
-	
+	private final Random rand = new Random();
+
 	/**
 	    Initializes a Robot on a specific tile in the environment. 
 	*/
@@ -68,7 +70,16 @@ public class Robot {
 			return Action.CLEAN;
 		}
 
-		return policy[posRow][posCol];
+		double randomDouble = rand.nextDouble();
+		Action currentAction = policy[posRow][posCol];
+		if (randomDouble <= 0.8){
+			return currentAction;
+		} else if (randomDouble <= 0.9){
+			return Action.MOVE_LEFT;
+		} else {
+			return Action.MOVE_RIGHT;
+		}
+
 	}
 
 	private Position findClosestTarget() {
