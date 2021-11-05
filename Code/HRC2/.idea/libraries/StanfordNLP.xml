@@ -1,0 +1,37 @@
+<component name="libraryTable">
+  <library name="StanfordNLP">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/jollyday-0.4.9-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/istack-commons-runtime-3.0.7.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/jaxb-api-2.4.0-b180830.0359-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/xom.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/stanford-corenlp-4.2.2-javadoc.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/slf4j-api.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/slf4j-simple.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/javax.json.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/stanford-corenlp-4.2.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/javax.activation-api-1.2.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/javax.activation-api-1.2.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/ejml-simple-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/ejml-simple-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/jaxb-impl-2.4.0-b180830.0438-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/joda-time-2.10.5-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/jaxb-api-2.4.0-b180830.0359.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/joda-time.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/ejml-ddense-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/protobuf-java-3.11.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/istack-commons-runtime-3.0.7-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/ejml-core-0.39-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/ejml-core-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/ejml-ddense-0.39.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/xom-1.3.2-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/stanford-corenlp-4.2.2-models.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/jollyday.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/javax.json-api-1.0-sources.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/stanford-corenlp-4.2.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/StanfordNLP/jaxb-impl-2.4.0-b180830.0438.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
