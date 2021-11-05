@@ -15,6 +15,9 @@ public class Robot {
 	private Action[][] policy;
 	private boolean finished = false;
 	private int id;
+	private static LinkedList<Position> currentTargets = null;
+	public static void setCurrentTargets(LinkedList<Position> targets){currentTargets = targets;}
+	private Position myTarget;
 	
 	/**
 	    Initializes a Robot on a specific tile in the environment. 
@@ -26,6 +29,7 @@ public class Robot {
 		this.posCol = posCol;
 		this.waiting = true;
 		this.id = id;
+		myTarget = null;
 	}
 	
 	public int getPosRow() { return posRow; }
@@ -42,10 +46,6 @@ public class Robot {
 	*/
 	public Action getAction () {
 		if(finished) return Action.DO_NOTHING;
-		if (env.getTileStatus(this.posRow, this.posCol) == TileStatus.DIRTY) {
-			this.waiting = true;
-			return Action.CLEAN;
-		}
 		if(waiting) {
 			Position closestTarget = findClosestTarget();
 
@@ -53,19 +53,28 @@ public class Robot {
 				finished = true;
 				return Action.DO_NOTHING;
 
+			}else{
+				//System.out.println("Robot " + id +" is now looking for target " + closestTarget);
 			}
+			waiting = false;
+			currentTargets.remove(closestTarget);
+			myTarget = closestTarget;
+			//System.out.println("Remaining targets: " + currentTargets);
 			System.out.println("\n\nFinding policy for robot " + id);
 			policy = env.generatePolicy(closestTarget);
+		}
+		if (myTarget.equals(new Position(posRow,posCol))) {
+			this.waiting = true;
+			return Action.CLEAN;
 		}
 
 		return policy[posRow][posCol];
 	}
 
 	private Position findClosestTarget() {
-		LinkedList<Position> targets = env.getDirtyTiles();
 		int minDistance = Integer.MAX_VALUE;
 		Position minTarget = null;
-		for(Position target: targets){
+		for(Position target: currentTargets){
 			int distance = Math.abs(this.posRow - target.row) + Math.abs(this.posCol - target.col);
 			if( minDistance > distance ){
 				minDistance = distance;

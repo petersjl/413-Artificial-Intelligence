@@ -48,6 +48,7 @@ public class Environment {
 			}
 		}
 		this.robots = robots;
+		Robot.setCurrentTargets((LinkedList<Position>) dirtyTiles.clone());
 		this.minChangeInMatrixAllowed = epsilon * (1 - discount) / discount;
 		//this.policy = valueToPolicy(getUtilityMatrix());
 	}
@@ -166,7 +167,7 @@ public class Environment {
 				break;
 			}
 		}
-		Utilities.printArray(utilityMatrix);
+		//Utilities.printArray(utilityMatrix);
 		return utilityMatrix;
 	}
 
@@ -183,8 +184,8 @@ public class Environment {
 
 			for (int i = 0; i < rows; i++){
 				for (int j = 0; j < cols; j++){
-
-					if (getTileStatus(i,j) != TileStatus.DIRTY){
+					boolean isTarget = getTileStatus(i,j) == TileStatus.DIRTY && i == targetI && j == targetJ;
+					if (!isTarget){
 						ArrayList <Double> qValues = getQValuesForActions(i, j, previousUtilityMatrix);
 						utilityMatrix[i][j] = rewards[i][j] + discount * Collections.max(qValues);
 						double changeInState = Math.abs(utilityMatrix[i][j] - previousUtilityMatrix[i][j]);
@@ -243,7 +244,7 @@ public class Environment {
 
 				if (getTileStatus(i,j) == TileStatus.DIRTY && i == targetI && j == targetJ){
 					utilityMatrix[i][j] = 1.0;
-				} else if (getTileStatus(i,j) == TileStatus.CLEAN){
+				} else if (getTileStatus(i,j) == TileStatus.CLEAN || getTileStatus(i,j) == TileStatus.DIRTY){
 					utilityMatrix[i][j] = -0.04;
 				} else { //Impassable tiles (will avoid, just giving value for sake of consistency
 					utilityMatrix[i][j] = 0.0;

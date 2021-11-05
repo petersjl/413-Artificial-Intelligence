@@ -19,4 +19,9 @@ public class Position {
 		if(this.row != other.row) return false;
 		return this.col == other.col;
 	}
+
+	@Override
+	public String toString(){
+			return "(" + row + "," + col + ")";
+	}
 }
