@@ -14,5 +14,6 @@ public class Tile {
 	
 	public TileStatus getStatus() { return status; }
 	public void cleanTile() { status = TileStatus.CLEAN; }
+	public void soilTile() { status = TileStatus.DIRTY; }
 	public String toString() { return ""+status.toString().charAt(0); }
 }
