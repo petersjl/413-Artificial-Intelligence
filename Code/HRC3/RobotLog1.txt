@@ -1,0 +1,29 @@
+> begin record
+I will begin recording your commands. Please enter them one line at a time and end with "end record"
+> move right
+> move up
+> move right
+> end record
+Please enter a name for the plan. Please note only the first word will be recorded.
+first
+I have saved the plan as "first"
+> execute plan first
+Starting execution of plan first
+Finished executing plan. Returning to normal runtime. **The robot has moved according to the plan given above**
+> execute symmetric plan first
+This is a symmetric plan
+Starting execution of plan first
+Finished executing plan. Returning to normal runtime. **The robot has returned to its original position**
+> clean list
+You're probably telling me to clean
+Please enter target coordinates as int pairs separated by a space, one per line, and end with a blank row
+> 2 3
+> 				**This line is blank to end the coordinates**
+I found a path to the targets and will now execute	**The robot cleaned the target at 2,3**
+> clean all
+By that, I think I should clean
+I found a path to the targets and will now execute **The robot cleaned all the other targets**
+> 
+
+
+not shown here but all commands are forced to lower case for parsing purposes as stated in the instructions.
