@@ -1,6 +1,4 @@
-import java.awt.*;
 import java.util.*;
-import java.util.List;
 import java.util.Properties;
 
 import edu.stanford.nlp.ling.CoreAnnotations;
@@ -28,7 +26,6 @@ public class Robot {
 	private int posCol;
 	private String name = "";
 	private boolean awaitingName = false;
-	public Color color;
 
 	private LinkedList<Position> targets;
 	private LinkedList<Position> path;
@@ -107,10 +104,6 @@ public class Robot {
 			"I'm sorry you seem to be having trouble",
 			"I'll try to make this easier on you in the future",
 			"Maybe we can work on this in the future"
-	);
-
-	private static List<String> commonSpellingErrors = Arrays.asList(
-			"moce", "plese", "clewn", "lftr", "rift", "travl"
 	);
 	
 	/**
@@ -209,7 +202,7 @@ public class Robot {
 	    System.out.print("> ");
 	    sc = new Scanner(System.in); 
         String name = sc.nextLine();
-		name = processSentence(name);
+		name = name.toLowerCase();
 //	    System.out.println(name);
 		if(awaitingName){
 			this.name = name;
@@ -604,39 +597,6 @@ public class Robot {
 			case "record": return DirectAction.RECORD;
 			case "execute": return DirectAction.EXECUTE;
 			default: return null;
-		}
-	}
-
-	private String processSentence(String inputSentence) {
-		inputSentence = inputSentence.toLowerCase(Locale.ROOT);
-
-		for (String misspelling : commonSpellingErrors) {
-
-			if (inputSentence.contains(misspelling)) {
-				String correctSpelling = getCorrectSpelling(misspelling);
-				inputSentence = inputSentence.replace(misspelling, correctSpelling);
-			}
-		}
-
-		return inputSentence;
-	}
-
-	private String getCorrectSpelling(String misspelling) {
-		switch (misspelling) {
-			case "moce":
-				return "move";
-			case "plese":
-				return "please";
-			case "clewn":
-				return "clean";
-			case "lftr":
-				return "left";
-			case "rift":
-				return "right";
-			case "travl":
-				return "travel";
-			default:
-				return "";
 		}
 	}
 

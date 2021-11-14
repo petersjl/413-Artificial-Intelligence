@@ -1,4 +1,4 @@
-import java.awt.Color;
+
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -7,7 +7,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedList;
 
 import javax.swing.JFrame;
@@ -26,7 +25,6 @@ import javax.swing.Timer;
 public class VisualizeSimulation extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private EnvironmentPanel envPanel;
-	private static String filename = "";
 	
 	/* Builds the environment; while not necessary for this problem set,
 	 * this could be modified to allow for different types of environments,
@@ -35,6 +33,7 @@ public class VisualizeSimulation extends JFrame {
 	 */
 	public VisualizeSimulation() {
 		// TODO: change the following to run the simulation on different maps.
+		String filename = "Map1.txt";
 		LinkedList<String> map = new LinkedList<> ();
 	    try {
 			File inputFile = new File(filename);
@@ -48,18 +47,19 @@ public class VisualizeSimulation extends JFrame {
 	    	fileReader.close();
 	    } catch (Exception exception) {
 	    	System.out.println(exception);
-	    	System.exit(0);;
 	    }	
 		
+	    Position robotPos = new Position(0,0); // Modify for multiple robots MIW
+		Environment env = new Environment(map, robotPos); // Modify for multiple robots MIW
+		Robot robot = new Robot(env, robotPos.row, robotPos.col);
+	
 		ArrayList<Robot> robots = new ArrayList<Robot>();
-		Environment env = new Environment(map, robots);
-
+		robots.add(robot);
     	envPanel = new EnvironmentPanel(env, robots);
     	add(envPanel);
 	}
 	
 	public static void main(String[] args) {
-		filename = args[0];
 	    JFrame frame = new VisualizeSimulation();
 
 	    frame.setTitle("CSSE 413: HRC Project");
@@ -71,35 +71,21 @@ public class VisualizeSimulation extends JFrame {
 
 @SuppressWarnings("serial")
 class EnvironmentPanel extends JPanel{
-	
-	private ArrayList<Color> robotColors = new ArrayList<>();
 	private Timer timer;
 	private Environment env;
 	private ArrayList<Robot> robots;
 	private LinkedList<Position> targets;
 	private int timesteps, timestepsStop;
 	//TODO: Change TILESIZE if you want to enlarge the visualization.
-	public static final int TILESIZE = 25;
+	public static final int TILESIZE = 15;
 	//TODO: Change the timeStepSpeed to speed-up or slow down the animation.
 	// 500 millisecond time steps
-	private int timeStepSpeed = 300;
+	private int timeStepSpeed = 100;
 	
 	public EnvironmentPanel(Environment env, ArrayList<Robot> robots) {
-		robotColors.add(Properties.RED);
-		robotColors.add(Properties.GREEN);
-		robotColors.add(Properties.BLUE);
-		robotColors.add(Properties.ORANGE);
-		robotColors.add(Properties.YELLOW);
-		robotColors.add(Properties.WHITE);
-		robotColors.add(Properties.INDIGO);
 	    setPreferredSize(new Dimension(env.getCols()*TILESIZE, env.getRows()*TILESIZE));
 		this.env = env;
 		this.robots = robots;
-
-		//Tell robots what their color is
-		for(int i = 0; i < this.robots.size(); i++){
-			this.robots.get(i).color = robotColors.get(i);
-		}
 		// number of time steps since the beginning
 //		this.timesteps = -1; // -1 to account for displaying initial state.
 		// number of time steps before stopping simulation
@@ -114,14 +100,14 @@ class EnvironmentPanel extends JPanel{
 //					timer.stop();
 //					printPerformanceMeasure();
 //				}
-				if (goalConditionMet()) {
-					timer.stop();
-					printPerformanceMeasure();
-				}
+//				if (goalConditionMet()) {
+//					timer.stop();
+//					printPerformanceMeasure();
+//				}
 			}
 			
-			public void printPerformanceMeasure() {
-				System.out.println("A solution has been found in: " + timesteps + " steps.");
+//			public void printPerformanceMeasure() {
+//				System.out.println("A solution has been found in: " + timesteps + " steps.");
 //				int num = 0;
 //				for(Robot robot : robots) {
 //					if (robot.getPathFound()) {
@@ -133,7 +119,7 @@ class EnvironmentPanel extends JPanel{
 //					}
 //					num++;
 //				}
-			}
+//			}
 			
 //			public boolean goalConditionMet() {
 //				if (targets.isEmpty()) return true;
@@ -144,56 +130,45 @@ class EnvironmentPanel extends JPanel{
 //				return temp;
 //			}
 			
-			public boolean goalConditionMet() {
-				return env.getNumDirtyTiles() == 0;
-
-		}
-			
+//			public void remove(int row, int col) {
+//				for (int i = 0; i < targets.size(); i++) {
+//					if (targets.get(i).row == row && targets.get(i).col == col) {
+//						targets.remove(i);
+//					}
+//				}
+//			}
 
 			// Gets the new state of the world after robot actions
 			public void updateEnvironment() {
 				timesteps++;
-				if (((int)(Math.random()*5)) == 0) {
-					int row = (int)(Math.random()* env.getRows());
-					int col = (int)(Math.random()* env.getCols());
-					if (env.validPos(row, col)) env.soilTile(row, col);
-				}
-				//TODO: the following screws up the id numbers.
-				if (((int)(Math.random()*100)) == 0)
-					robots.remove((int)(Math.random()*robots.size()));
-				if (robots.size() == 0) {
-					System.out.println("All robots broke. No solution found.");
-					System.exit(0);
-				}
 				for(Robot robot : robots) {
-					if (robot != null) {
-						Action action = robot.getAction();
-						int row = robot.getPosRow();
-						int col = robot.getPosCol();
-						switch(action) {
-	                    case CLEAN:
-	                        env.cleanTile(row, col);
-	                        break;
-			            case MOVE_DOWN:
-			                if (env.validPos(row+1, col))
-			                    robot.incPosRow();
-			                break;
-			            case MOVE_LEFT:
-			                if (env.validPos(row, col-1))
-			                    robot.decPosCol();
-			                break;
-			            case MOVE_RIGHT:
-			                if (env.validPos(row, col+1))
-			                    robot.incPosCol();
-			                break;
-			            case MOVE_UP:
-			                if (env.validPos(row-1, col))
-			                    robot.decPosRow();
-			                break;
-			            case DO_NOTHING: // pass to default
-			            default:
-			                break;
-						}
+					Action action = robot.getAction();
+					int row = robot.getPosRow();
+					int col = robot.getPosCol();
+//					remove(row, col);
+					switch(action) {
+                    case CLEAN:
+                        env.cleanTile(row, col);
+                        break;
+		            case MOVE_DOWN:
+		                if (env.validPos(row+1, col))
+		                    robot.incPosRow();
+		                break;
+		            case MOVE_LEFT:
+		                if (env.validPos(row, col-1))
+		                    robot.decPosCol();
+		                break;
+		            case MOVE_RIGHT:
+		                if (env.validPos(row, col+1))
+		                    robot.incPosCol();
+		                break;
+		            case MOVE_UP:
+		                if (env.validPos(row-1, col))
+		                    robot.decPosRow();
+		                break;
+		            case DO_NOTHING: // pass to default
+		            default:
+		                break;
 					}
 				}
 			}
@@ -232,13 +207,11 @@ class EnvironmentPanel extends JPanel{
                             TILESIZE, TILESIZE);
 		    }
 		// Paint Robot
-//		g.setColor(Properties.BLACK);
-		for(int i = 0; i < robots.size(); i++) {
-			g.setColor(robots.get(i).color);
-//			g.drawString(String.valueOf(i), robots.get(i).getPosCol() * TILESIZE+TILESIZE/4, (int) (robots.get(i).getPosRow() * TILESIZE+TILESIZE/1.5));
-			g.fillOval(robots.get(i).getPosCol() * TILESIZE+TILESIZE/4,
-						robots.get(i).getPosRow() * TILESIZE+TILESIZE/4,
-						TILESIZE/2, TILESIZE/2);
+		g.setColor(Properties.GREEN);
+		for(Robot robot : robots) {
+		    g.fillOval(robot.getPosCol() * TILESIZE+TILESIZE/4, 
+    		            robot.getPosRow() * TILESIZE+TILESIZE/4,
+    		            TILESIZE/2, TILESIZE/2);
 		}
 	}
 }
